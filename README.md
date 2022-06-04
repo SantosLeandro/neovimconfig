@@ -1,5 +1,5 @@
 # NEOVIM CONFIG FILE
 
-#deps
+## deps
 - fzf
 - ripgrep
