@@ -1,5 +1,8 @@
-# NEOVIM CONFIG FILE
+# ARQUIVO DE CONFIGURAÇÃO NEOVIM
 
-## deps
-- fzf
-- ripgrep
+## Instalação
+ - TODO
+ 
+## Dependências 
+- fzf: A command-line fuzzy finder written in Go
+- ripgrep: Line oriented search tool
