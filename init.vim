@@ -1,14 +1,14 @@
-:set number
-" :set relativenumber
-:set autoindent
-:set tabstop=4
-:set shiftwidth=4
-:set smarttab
-:set softtabstop=4
-:set mouse=a
-:set pumheight=8
-:set updatetime=100
-:set completeopt=menuone,noinsert,noselect
+set number
+set autoindent
+set tabstop=4
+set shiftwidth=4
+set smarttab
+set softtabstop=2
+set mouse=a
+set pumheight=8
+set updatetime=100
+set completeopt=menuone,noinsert,noselect
+set encoding=utf8
 
 call plug#begin()
 
@@ -37,15 +37,29 @@ Plug 'EdenEast/nightfox.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
 
+Plug 'preservim/nerdtree'
+
+Plug 'mattn/emmet-vim'
+
+Plug 'lewis6991/gitsigns.nvim'
+
+Plug 'nelsyeung/twig.vim'
+
 call plug#end()
 
 colorscheme nightfox
 
-
-
 " nnoremap <c-p>:GFiles<CR>
 
 let mapleader = " "
+
+nnoremap <leader>n :NERDTreeFocus<CR>
+nnoremap <C-n> :NERDTree<CR>
+nnoremap <C-t> :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
+
+noremap <leader>bn :bnext<CR>
+
 
 " Find files using Telescope command-line sugar.
 nnoremap <leader>ff <cmd>Telescope find_files<cr>
@@ -53,6 +67,8 @@ nnoremap <leader>fg <cmd>Telescope live_grep<cr>
 nnoremap <leader>fb <cmd>Telescope buffers<cr>
 nnoremap <leader>fh <cmd>Telescope help_tags<cr>
 
+
+nnoremap <leader>gp <cmd>Gitsigns preview_hunk<cr>
 " other maps
 nnoremap <leader>tn <cmd>:tabnew<cr>
 nnoremap <leader>fw <cmd>:w<cr>
@@ -60,6 +76,9 @@ nnoremap <leader>fw <cmd>:w<cr>
 
 lua << EOF
 
+require('gitsigns').setup()
+
+require('telescope').setup{  defaults = { file_ignore_patterns = { "node_modules","vendor" }} }
 require('lualine').setup()
 
 -- Mappings.
@@ -109,8 +128,20 @@ require'lspconfig'.clangd.setup{
 }
 
 
+htmlCapabilities = vim.lsp.protocol.make_client_capabilities()
+htmlCapabilities.textDocument.completion.completionItem.snippetSupport = true
 
-local servers = {  }
+
+require'lspconfig'.html.setup {
+	capabilities = htmlCapabilities }
+
+require'lspconfig'.intelephense.setup{}
+
+require'lspconfig'.solargraph.setup{}
+
+require'lspconfig'.eslint.setup{}
+
+local servers = { 'intelephense','html' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
     on_attach = on_attach,
