@@ -1,4 +1,5 @@
 set number
+set expandtab
 set autoindent
 set tabstop=4
 set shiftwidth=4
@@ -36,6 +37,8 @@ Plug 'mhinz/vim-signify'
 Plug 'EdenEast/nightfox.nvim'
 Plug 'nvim-lualine/lualine.nvim'
 Plug 'kyazdani42/nvim-web-devicons'
+"Plug 'kyazdani42/nvim-web-devicons' " optional, for file icons
+Plug 'kyazdani42/nvim-tree.lua'
 
 Plug 'preservim/nerdtree'
 
@@ -44,6 +47,8 @@ Plug 'mattn/emmet-vim'
 Plug 'lewis6991/gitsigns.nvim'
 
 Plug 'nelsyeung/twig.vim'
+
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
 
 call plug#end()
 
@@ -75,6 +80,8 @@ nnoremap <leader>fw <cmd>:w<cr>
 "nnoremap <leader>fq <cmd>:q<cr>
 
 lua << EOF
+
+require("nvim-tree").setup()
 
 require('gitsigns').setup()
 
@@ -115,8 +122,9 @@ end
 -- Use a loop to conveniently call 'setup' on multiple servers and
 -- map buffer local keybindings when the language server attaches
 -- Add additional capabilities supported by nvim-cmp
-local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
+--local capabilities = vim.lsp.protocol.make_client_capabilities()
+local capabilities = require('cmp_nvim_lsp').update_capabilities(vim.lsp.protocol.make_client_capabilities())
+--capabilities = require('cmp_nvim_lsp').update_capabilities(capabilities)
 
 local lspconfig = require('lspconfig')
 
@@ -132,16 +140,16 @@ htmlCapabilities = vim.lsp.protocol.make_client_capabilities()
 htmlCapabilities.textDocument.completion.completionItem.snippetSupport = true
 
 
-require'lspconfig'.html.setup {
-	capabilities = htmlCapabilities }
-
+--require'lspconfig'.html.setup {
+--	capabilities = htmlCapabilities }
+--
 require'lspconfig'.intelephense.setup{}
 
 require'lspconfig'.solargraph.setup{}
-
 require'lspconfig'.eslint.setup{}
+require'lspconfig'.dockerls.setup{}
 
-local servers = { 'intelephense','html' }
+local servers = { 'intelephense','tsserver', 'vuels' }
 for _, lsp in pairs(servers) do
   require('lspconfig')[lsp].setup {
     on_attach = on_attach,
@@ -196,6 +204,34 @@ cmp.setup {
   sources = {
     { name = 'nvim_lsp' },
     { name = 'luasnip' },
+  },
+}
+
+require'nvim-treesitter.configs'.setup {
+  -- A list of parser names, or "all"
+  ensure_installed = { "c", "lua", "javascript", "php" },
+
+  -- Install parsers synchronously (only applied to `ensure_installed`)
+  sync_install = false,
+
+  -- List of parsers to ignore installing (for "all")
+  ignore_install = { },
+
+  highlight = {
+    -- `false` will disable the whole extension
+    enable = true,
+
+    -- NOTE: these are the names of the parsers and not the filetype. (for example if you want to
+    -- disable highlighting for the `tex` filetype, you need to include `latex` in this list as this is
+    -- the name of the parser)
+    -- list of language that will be disabled
+    disable = { },
+
+    -- Setting this to true will run `:h syntax` and tree-sitter at the same time.
+    -- Set this to `true` if you depend on 'syntax' being enabled (like for indentation).
+    -- Using this option may slow down your editor, and you may see some duplicate highlights.
+    -- Instead of true it can also be a list of languages
+    additional_vim_regex_highlighting = false,
   },
 }
 
